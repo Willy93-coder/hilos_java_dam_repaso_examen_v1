@@ -20,9 +20,6 @@ public class Everest {
     }
 }
 
-/**
- * Cima
- */
 class Cima {
 
     private int atrapados;
@@ -35,18 +32,23 @@ class Cima {
         return atrapados;
     }
 
+    // Metodo para rescatar personas - Setter de los atrapados
     public synchronized int rescatar(Helicoptero helicoptero) throws InterruptedException {
+        // Mostramos que hilo esta en la cima
         System.out.println(helicoptero.getName() + " : estoy en la cima. Procedo al rescate");
+        // Dormimos el hilo entre 2 a 4 segundos
         Thread.sleep(new Random().nextInt(2000, 4000));
+        // Variable interna para saber cuantas personas hemos rescatado
         int rescatados = 0;
+        // Comprobamos si la capacidad del Helicoptero es mayor a los atrapados - Asi evitamos que pueda llevarse mas gente de la que queda atrapada
         if (helicoptero.capacidad > atrapados) {
             // Solor atrapados
-            rescatados = atrapados;
+            rescatados = atrapados; // Rescatados es igual a atrapados - Si el Helicoptero tiene capacidad para 5 y solo quedan 2, se lleva 2
         } else {
-            rescatados = helicoptero.capacidad;
+            rescatados = helicoptero.capacidad; // Se lleva su capacidad si hay mas personas que sitios
         }
 
-        // Los rescatados
+        // Los rescatados modifican el total de atrapados
         atrapados -= rescatados;
         System.out.println(helicoptero.getName() + " : estoy en la cima. He rescatado a " + rescatados + " atrapados. Quedan " + atrapados);
         return rescatados;
@@ -67,6 +69,7 @@ class Helicoptero extends Thread {
     @Override
     public void run() {
         Random r = new Random();
+        // Mientras que en la cima queden personas los Helicopteros siguen subiendo a la montania
         while (cima.getAtrapados() > 0) {
             try {
                 // Ida

@@ -3,17 +3,22 @@ import java.util.Random;
 
 public class Aparcamiento {
     public static void main(String[] args) throws Exception {
+        // Variable para guardar las plazas que recibimos por args
         int plazas = Integer.parseInt(args[0]);
+        // Variable para guardar el total de coches pasado por args
         int totalCoches = Integer.parseInt(args[1]);
+        // Array de coches
         Coche[] coches = new Coche[totalCoches];
-        
+        // Creamos el objeto parquing
         Parquing parquing = new Parquing(plazas);
         parquing.printPlazas();
+        // Creamos los coches de forma dinamica
         for (int i = 0; i < coches.length; i++) {
             coches[i] = new Coche(parquing);
             coches[i].start();
         }
 
+        // Esperamos a que los hilos acaben
         for (int i = 0; i < coches.length; i++) {
             coches[i].join();
         }
@@ -56,29 +61,29 @@ class Parquing {
         System.out.println("]");
     }
 
+    // Metodo entrar al parking
     public synchronized void entrarAlParking(Coche coche) throws InterruptedException {
+        // Comprobamos que mientras no haya una plaza null los hilos esperen
         while (!plazas.contains(null)) {
-            wait();
+            wait(); // Dormimos los hilos
         }
         // Entrar
-        int plazaLibre = plazas.indexOf(null);
-        plazas.set(plazaLibre, coche);
+        int plazaLibre = plazas.indexOf(null); // Buscamos la plaza que es null
+        plazas.set(plazaLibre, coche); // Hacemos un set para introducir un coche en ese espacio
 
         printPlazas();
     }
 
+    // Metodo para salir del parking
     public synchronized void salirDelParking(Coche coche) {
         // Salimos
-        int plazaLibre = plazas.indexOf(coche);
-        plazas.set(plazaLibre, null);
-        notifyAll();
+        int plazaLibre = plazas.indexOf(coche); // Buscamos la plaza donde este el coche
+        plazas.set(plazaLibre, null); // Hacemos un set para ponerla a null donde estaba el coche
+        notifyAll(); // Despertamos a todos los hilos
         printPlazas();
     }
 }
 
-/**
- * Coche
- */
 class Coche extends Thread {
 
     Parquing parquing;
@@ -90,6 +95,7 @@ class Coche extends Thread {
     @Override
     public void run() {
         Random r = new Random();
+        // Mientras los hilos no se interrumpan
         while (!Thread.interrupted()) {
             // paseamos
             System.out.println(getName() + " : Estoy paseando...");
